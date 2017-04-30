@@ -3,9 +3,11 @@ import 'basscss/css/basscss.css'
 import './styles/ionicons.css'
 import './styles/main.scss'
 import App from './App.vue'
-import './lib/NotePlayer'
+import { init } from './lib/NotePlayer'
 
-new Vue({
+const app = new Vue({
   el: '#app',
   ...App,
 })
+
+init('/mp3/ps.mp3').then(() => app.isLoaded = true)

@@ -7,19 +7,25 @@ import { Howl } from 'howler'
 const sprite = getNoteSpriteData()
 
 /*
-play(note('dSharp', 3))
-scale(note('c', 4), 'major').playNote(1)
+import { init, scale, play, note } from 'playnote'
+
+init('/mp3/soundSprite.mp3').then(() => {
+  play(note('dSharp', 3))
+  play([note('e', 3), note('g', 3), note('b', 3)])
+  play(note(scale('c', 'major').getDegree(4), 1))
+})
 */
-// TODO: add possibility to play notes in a given scale
-// TODO: add possibility to play chords in a given scale
 // TODO: release as library
 
-const piano = new Howl({
-  src: ['/mp3/ps.mp3'],
+let audioSource
+
+export const init = async (src) => new Promise(res => audioSource = new Howl({
+  src: [src],
   loop: false,
   autoplay: false,
   sprite,
-})
+  onload: res,
+}))
 
 export const note = transformNote
 export const scale = (baseNote, scale) => mapScale(baseNote, scale)
@@ -29,10 +35,14 @@ export const play = (notes, fadeMs = -1, waitMs = 0) => {
     notes = [notes]
   }
 
-  const ids = notes.map(n => piano.play(n))
+  if (!audioSource) {
+    throw new Error('Not initialized (call init)')
+  }
+
+  const ids = notes.map(n => audioSource.play(n))
 
   if (fadeMs > -1) {
-    setTimeout(() => ids.forEach(id => piano.fade(1, 0, fadeMs, id)), waitMs)
+    setTimeout(() => ids.forEach(id => audioSource.fade(1, 0, fadeMs, id)), waitMs)
   }
 }
 
@@ -47,11 +57,5 @@ export const playSequence = async (noteSequence) => {
 
   return restNoteSequence.length > 0 ? playSequence(restNoteSequence) : null
 }
-
-// TODO: remove
-export const notesForChord = (base, intervals) => [
-  base,
-  ...getIntervals(base, intervals),
-]
 
 export { rootNoteLetters }
