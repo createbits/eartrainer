@@ -1,4 +1,4 @@
-import { reverseTransformNote } from './NoteTransformer'
+import { reverseTransformNote, transformNote } from './NoteTransformer'
 import { noteMap, rootNoteLetters } from './NoteSpriteCalculator'
 
 const adjustHalfStepIndexForBiggerInterval = num => {
@@ -60,11 +60,18 @@ export const getIntervals = (baseNote, intervals) => {
       absoluteIntervalHalfStepIndex % 12
       : absoluteIntervalHalfStepIndex
 
-    const intervalLetter = Object.keys(noteMap)
-      .filter(letter => letter.startsWith(intervalRootNoteLetter)
-      && noteMap[letter].halfStepIndex === relativeIntervalHalfStepIndex)[0]
+    let intervalLetter = Object.keys(noteMap)
+      .filter(l => l.startsWith(intervalRootNoteLetter)
+      && noteMap[l].halfStepIndex === relativeIntervalHalfStepIndex)[0]
 
     const intervalOctave = calculateOctave(absoluteIntervalHalfStepIndex, octave) + octaveToAdd
+
+    // special rules
+    if (letter === 'cSharp' && distance === 7 && type === 'major') {
+      intervalLetter = 'bSharp'
+    } else if (letter === 'aFlat' && distance === 3 && type === 'minor') {
+      intervalLetter = 'cFlat'
+    }
 
     if (!intervalOctave || !intervalLetter) {
         throw new Error(
@@ -72,6 +79,6 @@ export const getIntervals = (baseNote, intervals) => {
         )
     }
 
-    return `${intervalLetter}_${intervalOctave}`
+    return transformNote(intervalLetter, intervalOctave)
   })
 }

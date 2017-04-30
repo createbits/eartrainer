@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="inline-block mr2" v-for="answer in whiteKeyAnswers">
+    <div class="inline-block mr2" v-for="answer in answers">
       <button-component :disabled="disabled" @click="$emit('answer', answer.value)"><div v-text="answer.label"></div></button-component>
     </div>
   </div>
@@ -11,24 +11,13 @@
   export default {
     components: { ButtonComponent },
     props: {
+      answers: {
+        type: Array,
+      },
       disabled: {
         type: Boolean,
         required: false,
       },
-    },
-    data() {
-      return {
-        whiteKeyAnswers: [
-          { label: 'c', value: 'c' },
-          { label: 'd', value: 'd' },
-          { label: 'e', value: 'e' },
-          { label: 'f', value: 'f' },
-          { label: 'g', value: 'g' },
-          { label: 'a', value: 'a' },
-          { label: 'b', value: 'b' },
-          { label: 'c', value: 'c' },
-        ]
-      }
     },
   }
 </script>

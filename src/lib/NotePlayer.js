@@ -1,16 +1,19 @@
 import { rootNoteLetters, getNoteSpriteData } from './NoteSpriteCalculator'
 import { getIntervals } from './IntervalCalculator'
 import { transformNote } from './NoteTransformer'
+import { scale as mapScale } from './ScaleMapper'
 import { Howl } from 'howler'
 
 const sprite = getNoteSpriteData()
 
 /*
+play(note('dSharp', 3))
 scale(note('c', 4), 'major').playNote(1)
 */
 // TODO: add possibility to play notes in a given scale
 // TODO: add possibility to play chords in a given scale
 // TODO: release as library
+
 const piano = new Howl({
   src: ['/mp3/ps.mp3'],
   loop: false,
@@ -18,10 +21,15 @@ const piano = new Howl({
   sprite,
 })
 
+export const note = transformNote
+export const scale = (baseNote, scale) => mapScale(baseNote, scale)
+
 export const play = (notes, fadeMs = -1, waitMs = 0) => {
-  const ids = notes.map(note => {
-    return piano.play(note)
-  })
+  if (!Array.isArray(notes)) {
+    notes = [notes]
+  }
+
+  const ids = notes.map(n => piano.play(n))
 
   if (fadeMs > -1) {
     setTimeout(() => ids.forEach(id => piano.fade(1, 0, fadeMs, id)), waitMs)
@@ -45,7 +53,5 @@ export const notesForChord = (base, intervals) => [
   base,
   ...getIntervals(base, intervals),
 ]
-
-export const note = transformNote
 
 export { rootNoteLetters }

@@ -3,20 +3,21 @@
     <div class="mb2">
       Find out which note is played after the II - V - I progression.
 
-      <div class="mt2">Key: <span class="bold">C Major</span></div>
+      <div class="mt2">Key: <span class="bold" v-text="gameKey"></span></div>
       <div class="mt2">Round: <span class="bold" v-text="round"></span> / <span v-text="roundEnd"></span></div>
     </div>
 
     <div>
       <answer-buttons
               v-if="!hasAnswer"
+              :answers="gameScaleAnswers"
               :disabled="!roundAnswer"
               @answer="provideAnswer(arguments[0])"></answer-buttons>
     </div>
 
     <div v-if="hasAnswer">
-      You got the <span class="bold" v-text="rightOrWrong"></span> note! The note played was: <span v-text="roundAnswer.toUpperCase()" class="b"></span>
-      <div class="mt1" v-if="!hasRightAnswer">You played: <span class="bold" v-text="providedAnswer.toUpperCase()"></span></div>
+      You got the <span class="bold" v-text="rightOrWrong"></span> note! The note played was: <span v-text="formatAnswer(roundAnswer)" class="b"></span>
+      <div class="mt1" v-if="!hasRightAnswer">You played: <span class="bold" v-text="formatAnswer(providedAnswer)"></span></div>
 
       <div class="mt2">
 
@@ -35,28 +36,14 @@
   </div>
 </template>
 <script>
-  import { sample, drop, take } from 'lodash'
-  import { playSequence, note, notesForChord, rootNoteLetters } from '../lib/NotePlayer'
+  import { sample, drop, take, startCase } from 'lodash'
+  import { playSequence, note, scale, notesForChord } from '../lib/NotePlayer'
+  import { formatLetter } from '../lib/NoteTransformer'
   import AnswerButtons from './NoteAnswerButtons.vue'
   import ButtonComponent from './Button.vue'
 
-  const twoFiveOneSequence = [
-    { notes: notesForChord(note('d', 4), [
-      { type: 'minor', distance: 3 },
-      { type: 'perfect', distance: 5 },
-    ]), length: 800 },
-    { notes: notesForChord(note('g', 4), [
-      { type: 'major', distance: 3 },
-      { type: 'perfect', distance: 5 },
-    ]), length: 800 },
-    { notes: notesForChord(note('c', 4), [
-      { type: 'major', distance: 3 },
-      { type: 'perfect', distance: 5 },
-    ]), length: 1600 },
-  ]
-
-  const playRandomSequence = async () => {
-    const answer = sample(rootNoteLetters)
+  const playRandomSequence = async (twoFiveOneSequence, degrees) => {
+    const answer = sample(degrees)
 
     await playSequence([
       ...twoFiveOneSequence,
@@ -66,18 +53,17 @@
     return answer
   }
 
-  const playResolveToTonic = async (tone) => {
-    const toneIndex = rootNoteLetters.indexOf(tone)
+  const playResolveToTonic = async (tone, degrees) => {
+    const toneIndex = degrees.indexOf(tone)
 
-    let resolvingTones = [note('c', 4)]
+    let resolvingTones = [note(degrees[0], 4)]
 
     if (toneIndex > 0) {
       resolvingTones = toneIndex >= 4
-        ? [...drop(rootNoteLetters, toneIndex).map(n => note(n, 4)), note('c', 5)]
-        : take(rootNoteLetters, (toneIndex + 1)).map(n => note(n, 4)).reverse()
+        ? [...drop(degrees, toneIndex).map(n => note(n, 4)), note(degrees[0], 5)]
+        : take(degrees, (toneIndex + 1)).map(n => note(n, 4)).reverse()
     }
 
-    console.log(resolvingTones)
     return await playSequence(resolvingTones.map((note, i) => ({
       notes: [note],
       length: (i === 0 || (resolvingTones.length - 1) === i) ? 800 : 400,
@@ -86,7 +72,7 @@
 
   const initData = {
     round: 1,
-    roundEnd: 16,
+    roundEnd: 12,
     roundAnswer: '',
     providedAnswer: '',
     isPlayingResolve: false,
@@ -95,8 +81,42 @@
 
   export default {
     components: { AnswerButtons, ButtonComponent },
+    props: {
+      baseNoteLetter: {
+        type: String,
+      },
+      scale: {
+        type: String,
+      },
+    },
     data() {
-      return { ...initData }
+      const gameScale = scale(this.baseNoteLetter, this.scale)
+
+      return {
+        ...initData,
+        gameScaleDegrees: gameScale.getDegrees(),
+        gameScaleAnswers: [...gameScale.getDegrees(), gameScale.getDegree(1)].map(letter => ({
+          value: letter,
+          label: formatLetter(letter),
+        })),
+        twoFiveOneSequence: [
+          { notes: [
+            note(gameScale.getDegree(2), 4),
+            note(gameScale.getDegree(4), 4),
+            note(gameScale.getDegree(6), 4),
+          ], length: 800 },
+          { notes: [
+            note(gameScale.getDegree(5), 4),
+            note(gameScale.getDegree(7), 4),
+            note(gameScale.getDegree(2), 5),
+          ], length: 800 },
+          { notes: [
+            note(gameScale.getDegree(1), 4),
+            note(gameScale.getDegree(3), 4),
+            note(gameScale.getDegree(5), 4),
+          ], length: 1600 },
+        ],
+      }
     },
     mounted() {
       this.playSequence()
@@ -116,9 +136,15 @@
       },
       canPlayNextRound() {
         return !this.isPlayingResolve && this.round < this.roundEnd
+      },
+      gameKey() {
+        return `${this.baseNoteLetter.toUpperCase()} ${startCase(this.scale)}`
       }
     },
     methods: {
+      formatAnswer(a) {
+        return formatLetter(a)
+      },
       playNextRound() {
         this.roundAnswer = ''
         this.providedAnswer = ''
@@ -129,11 +155,12 @@
         }
       },
       playSequence() {
-        playRandomSequence().then(answer => this.roundAnswer = answer)
+        const { twoFiveOneSequence, gameScaleDegrees } = this
+        playRandomSequence(twoFiveOneSequence, gameScaleDegrees).then(answer => this.roundAnswer = answer)
       },
       playResolveToTonic() {
         this.isPlayingResolve = true
-        playResolveToTonic(this.roundAnswer).then(() => this.isPlayingResolve = false)
+        playResolveToTonic(this.roundAnswer, this.gameScaleDegrees).then(() => this.isPlayingResolve = false)
       },
       provideAnswer(value) {
         if (!this.roundAnswer) {
