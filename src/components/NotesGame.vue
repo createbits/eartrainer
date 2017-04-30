@@ -48,7 +48,7 @@
     // TODO: refactor answers to contain notes and only display it without the octave
     await playSequence([
       ...twoFiveOneSequence,
-      { notes: [note(answer.value, 4)], length: 1000, offset: 1000 },
+      { notes: [answer.value], length: 1000, offset: 1000 },
     ])
 
     return answer.value
@@ -56,9 +56,7 @@
 
   const playResolveToTonic = async (scope) => {
     const { scaleNotes } = scope
-    const gameScale = scale(scope.baseNoteLetter, scope.scale)
-    const gameDegrees = gameScale.getDegrees()
-    const toneIndex = gameDegrees.indexOf(scope.roundAnswer)
+    const toneIndex = scaleNotes.indexOf(scope.roundAnswer)
 
     let resolvingTones = [scaleNotes[0]]
 

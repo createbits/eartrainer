@@ -56,7 +56,7 @@
   </div>
 </template>
 <script>
-  import { scale } from '../lib/NotePlayer'
+  import { scale, note } from '../lib/NotePlayer'
   import { formatLetter } from '../lib/NoteTransformer'
   import ButtonComponent from './Button.vue'
   import NotesGame from './NotesGame.vue'
@@ -81,14 +81,16 @@
           this[key] = initData[key]
         })
       },
-      playBeginnerNotes(scale, notes) {
+      playBeginnerNotes(scale, letters) {
         this.gameMode = 'notes'
 
+        // TODO: restructure so that the the notesgame uses sets with answers and question sequence
+        // TODO: so that the random major / minor game can be played
         this.gameData = {
           baseNoteLetter: 'c',
           scale,
-          answers: notes.map(d => ({
-            value: d,
+          answers: letters.map(d => ({
+            value: note(d, 4),
             label: formatLetter(d),
           })),
         }
@@ -96,18 +98,16 @@
       playAllNotes(baseNoteLetter, scaleKey) {
         this.gameMode = 'notes'
 
-        const gameScale = scale(baseNoteLetter, scaleKey)
-
         this.gameData = {
           baseNoteLetter,
           scale: scaleKey,
-          answers: [
-            ...gameScale.getDegrees(),
-            gameScale.getDegree(1),
-          ].map(d => ({
-            value: d,
-            label: formatLetter(d),
-          })),
+          answers: scale(baseNoteLetter, scaleKey)
+            .base(4)
+            .notes([1, 2, 3, 4, 5, 6, 7, 8])
+            .map(d => ({
+              value: d,
+              label: formatLetter(d),
+            })),
         }
       },
     },
