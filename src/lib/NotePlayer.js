@@ -10,10 +10,10 @@ import { init, scale, play, note } from 'playnote'
 
 init('/mp3/soundSprite.mp3').then(() => {
   play(note('dSharp', 3))
-  play([note('e', 3), note('g', 3), note('b', 3)])
-  play(note(scale('c', 'major').getDegree(4), 1))
+  play(scale('c', 'major').base(3).getNote(1))
 })
 */
+// TODO: add logic to play notes through scale
 // TODO: release as library
 
 let audioSource

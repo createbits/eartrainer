@@ -6,7 +6,7 @@
         <game-box></game-box>
       </div>
     </div>
-    <div v-if="!isLoaded">
+    <div v-if="!isLoaded" class="font-merriweather center" style="margin-top: 200px">
       Loading...
     </div>
   </div>

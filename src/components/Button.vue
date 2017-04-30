@@ -1,9 +1,9 @@
 <template>
   <div
-          class="border pointer py1 px2 inline-block"
+          class="border pointer py1 px2 inline-block align-middle"
           :class="{ 'pointer': !disabled, 'cursor-not-allowed': disabled }"
           @click="!disabled && $emit('click')"
-          style="border-color: black; border-radius: 3px">
+          style="border-color: black; line-height: 22px; border-radius: 3px">
     <slot></slot>
   </div>
 </template>

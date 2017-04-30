@@ -10,7 +10,7 @@
     <div>
       <answer-buttons
               v-if="!hasAnswer"
-              :answers="gameScaleAnswers"
+              :answers="answers"
               :disabled="!roundAnswer"
               @answer="provideAnswer(arguments[0])"></answer-buttons>
     </div>
@@ -42,26 +42,30 @@
   import AnswerButtons from './NoteAnswerButtons.vue'
   import ButtonComponent from './Button.vue'
 
-  const playRandomSequence = async (twoFiveOneSequence, degrees) => {
-    const answer = sample(degrees)
+  const playRandomSequence = async (twoFiveOneSequence, answers) => {
+    const answer = sample(answers)
 
     await playSequence([
       ...twoFiveOneSequence,
-      { notes: [note(answer, 4)], length: 1000, offset: 1000 },
+      { notes: [note(answer.value, 4)], length: 1000, offset: 1000 },
     ])
 
-    return answer
+    return answer.value
   }
 
-  const playResolveToTonic = async (tone, degrees) => {
-    const toneIndex = degrees.indexOf(tone)
+  const playResolveToTonic = async (scope) => {
+    const gameScale = scale(scope.baseNoteLetter, scope.scale)
+    const gameDegrees = gameScale.getDegrees()
+    const toneIndex = gameDegrees.indexOf(scope.roundAnswer)
+    const baseNoteDegree = gameScale.getDegree(1)
 
-    let resolvingTones = [note(degrees[0], 4)]
+    let resolvingTones = [note(baseNoteDegree, 4)]
 
     if (toneIndex > 0) {
+      // TODO: why does it jump an octave when using e major?
       resolvingTones = toneIndex >= 4
-        ? [...drop(degrees, toneIndex).map(n => note(n, 4)), note(degrees[0], 5)]
-        : take(degrees, (toneIndex + 1)).map(n => note(n, 4)).reverse()
+        ? [...drop(gameDegrees, toneIndex).map(n => note(n, 4)), note(baseNoteDegree, 5)]
+        : take(gameDegrees, (toneIndex + 1)).map(n => note(n, 4)).reverse()
     }
 
     return await playSequence(resolvingTones.map((note, i) => ({
@@ -88,17 +92,15 @@
       scale: {
         type: String,
       },
+      answers: {
+        type: Array,
+      },
     },
     data() {
       const gameScale = scale(this.baseNoteLetter, this.scale)
 
       return {
         ...initData,
-        gameScaleDegrees: gameScale.getDegrees(),
-        gameScaleAnswers: [...gameScale.getDegrees(), gameScale.getDegree(1)].map(letter => ({
-          value: letter,
-          label: formatLetter(letter),
-        })),
         twoFiveOneSequence: [
           { notes: [
             note(gameScale.getDegree(2), 4),
@@ -139,7 +141,7 @@
       },
       gameKey() {
         return `${this.baseNoteLetter.toUpperCase()} ${startCase(this.scale)}`
-      }
+      },
     },
     methods: {
       formatAnswer(a) {
@@ -155,12 +157,12 @@
         }
       },
       playSequence() {
-        const { twoFiveOneSequence, gameScaleDegrees } = this
-        playRandomSequence(twoFiveOneSequence, gameScaleDegrees).then(answer => this.roundAnswer = answer)
+        const { twoFiveOneSequence, answers } = this
+        playRandomSequence(twoFiveOneSequence, answers).then(answer => this.roundAnswer = answer)
       },
       playResolveToTonic() {
         this.isPlayingResolve = true
-        playResolveToTonic(this.roundAnswer, this.gameScaleDegrees).then(() => this.isPlayingResolve = false)
+        playResolveToTonic(this).then(() => this.isPlayingResolve = false)
       },
       provideAnswer(value) {
         if (!this.roundAnswer) {

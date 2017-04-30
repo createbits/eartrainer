@@ -13,26 +13,51 @@
       </div>
     </div>
 
-    <div v-if="isPlaying">
-      <div class="center" v-if="!gameMode">
-        <div class="mb2">
-          <button-component @click="playNotes('c', 'major')">All Notes - C Major</button-component>
-        </div>
-        <div class="mb2">
-          <button-component @click="playNotes('e', 'major')">All Notes - E Major</button-component>
-        </div>
-        <div>
-          <button-component @click="playNotes('c', 'minor')">All Notes - C Minor</button-component>
-        </div>
+    <div v-if="isPlaying && !gameMode" class="center">
+      <h2 class="h2">Beginner</h2>
+      <div class="mb2">
+        <button-component @click="playBeginnerNotes('major', ['c', 'd', 'e', 'f'])">C to F Notes - C Major</button-component>
+      </div>
+      <div class="mb2">
+        <button-component @click="playBeginnerNotes('major', ['g', 'a', 'b', 'c'])">G to C Notes - C Major</button-component>
+      </div>
+      <div class="mb2">
+        <button-component @click="playBeginnerNotes('minor', ['c', 'd', 'eFlat', 'f'])">C to F Notes - C Minor</button-component>
+      </div>
+      <div class="mb2">
+        <button-component @click="playBeginnerNotes('minor', ['g', 'aFlat', 'bFlat', 'c'])">G to C Notes - C Minor</button-component>
       </div>
 
-      <div v-if="gameMode === 'notes'">
-        <notes-game :baseNoteLetter="gameData.baseNoteLetter" :scale="gameData.scale" @finish="reset"></notes-game>
+      <h2 class="h2">Intermediate</h2>
+
+      <div class="mb2">
+        <button-component @click="playAllNotes('c', 'major')">All Notes - C Major</button-component>
       </div>
+      <div class="mb2">
+        <button-component @click="playAllNotes('g', 'minor')">All Notes - G Minor</button-component>
+      </div>
+      <div class="mb2">
+        <button-component @click="playAllNotes('e', 'major')">All Notes - Random Major</button-component>
+      </div>
+      <div class="mb2">
+        <button-component @click="playAllNotes('c', 'minor')">All Notes - Random Minor</button-component>
+      </div>
+
+      <!-- h2 class="h2">Advanced</h2 -->
+    </div>
+
+    <div v-if="gameMode === 'notes'">
+      <notes-game
+              :answers="gameData.answers"
+              :baseNoteLetter="gameData.baseNoteLetter"
+              :scale="gameData.scale"
+              @finish="reset"></notes-game>
     </div>
   </div>
 </template>
 <script>
+  import { scale } from '../lib/NotePlayer'
+  import { formatLetter } from '../lib/NoteTransformer'
   import ButtonComponent from './Button.vue'
   import NotesGame from './NotesGame.vue'
 
@@ -56,9 +81,34 @@
           this[key] = initData[key]
         })
       },
-      playNotes(baseNoteLetter, scale) {
+      playBeginnerNotes(scale, notes) {
         this.gameMode = 'notes'
-        this.gameData = { baseNoteLetter, scale }
+
+        this.gameData = {
+          baseNoteLetter: 'c',
+          scale,
+          answers: notes.map(d => ({
+            value: d,
+            label: formatLetter(d),
+          })),
+        }
+      },
+      playAllNotes(baseNoteLetter, scaleKey) {
+        this.gameMode = 'notes'
+
+        const gameScale = scale(baseNoteLetter, scaleKey)
+
+        this.gameData = {
+          baseNoteLetter,
+          scale: scaleKey,
+          answers: [
+            ...gameScale.getDegrees(),
+            gameScale.getDegree(1),
+          ].map(d => ({
+            value: d,
+            label: formatLetter(d),
+          })),
+        }
       },
     },
   }
