@@ -1,16 +1,12 @@
 import { rootNoteLetters, getNoteSpriteData } from './NoteSpriteCalculator'
 import { getIntervals } from './IntervalCalculator'
+import { transformNote } from './NoteTransformer'
 import { Howl } from 'howler'
 
 const sprite = getNoteSpriteData()
 
 /*
- TODO: add possibility to play chords
-play(notesForChord('c_1', {
-  majorSecond: true,
-  perfectFifth: true,
-  minorSeventh: true,
-}))
+scale(note('c', 4), 'major').playNote(1)
 */
 // TODO: add possibility to play notes in a given scale
 // TODO: add possibility to play chords in a given scale
@@ -44,9 +40,12 @@ export const playSequence = async (noteSequence) => {
   return restNoteSequence.length > 0 ? playSequence(restNoteSequence) : null
 }
 
+// TODO: remove
 export const notesForChord = (base, intervals) => [
   base,
   ...getIntervals(base, intervals),
 ]
+
+export const note = transformNote
 
 export { rootNoteLetters }

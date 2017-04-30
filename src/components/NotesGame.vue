@@ -36,20 +36,20 @@
 </template>
 <script>
   import { sample, drop, take } from 'lodash'
-  import { playSequence, notesForChord, rootNoteLetters } from '../lib/NotePlayer'
+  import { playSequence, note, notesForChord, rootNoteLetters } from '../lib/NotePlayer'
   import AnswerButtons from './NoteAnswerButtons.vue'
   import ButtonComponent from './Button.vue'
 
   const twoFiveOneSequence = [
-    { notes: notesForChord('d_4', [
+    { notes: notesForChord(note('d', 4), [
       { type: 'minor', distance: 3 },
       { type: 'perfect', distance: 5 },
     ]), length: 800 },
-    { notes: notesForChord('g_4', [
+    { notes: notesForChord(note('g', 4), [
       { type: 'major', distance: 3 },
       { type: 'perfect', distance: 5 },
     ]), length: 800 },
-    { notes: notesForChord('c_4', [
+    { notes: notesForChord(note('c', 4), [
       { type: 'major', distance: 3 },
       { type: 'perfect', distance: 5 },
     ]), length: 1600 },
@@ -60,7 +60,7 @@
 
     await playSequence([
       ...twoFiveOneSequence,
-      { notes: [`${answer}_4`], length: 1000, offset: 1000 },
+      { notes: [note(answer, 4)], length: 1000, offset: 1000 },
     ])
 
     return answer
@@ -69,12 +69,12 @@
   const playResolveToTonic = async (tone) => {
     const toneIndex = rootNoteLetters.indexOf(tone)
 
-    let resolvingTones = ['c_4']
+    let resolvingTones = [note('c', 4)]
 
     if (toneIndex > 0) {
       resolvingTones = toneIndex >= 4
-        ? [...drop(rootNoteLetters, toneIndex).map(n => `${n}_4`), 'c_5']
-        : take(rootNoteLetters, (toneIndex + 1)).map(n => `${n}_4`).reverse()
+        ? [...drop(rootNoteLetters, toneIndex).map(n => note(n, 4)), note('c', 5)]
+        : take(rootNoteLetters, (toneIndex + 1)).map(n => note(n, 4)).reverse()
     }
 
     console.log(resolvingTones)
@@ -86,7 +86,7 @@
 
   const initData = {
     round: 1,
-    roundEnd: 2,
+    roundEnd: 16,
     roundAnswer: '',
     providedAnswer: '',
     isPlayingResolve: false,
