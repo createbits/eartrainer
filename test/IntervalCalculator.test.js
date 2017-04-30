@@ -54,5 +54,9 @@ test('get note intervals', () => {
     { type: 'tritone', octave: -1 }
   ])).toEqual(['gFlat_3', 'gFlat_5', 'a_2'])
 
+  expect(getIntervals('g_3', [
+    { type: 'perfect', distance: 4 }
+  ])).toEqual(['c_4'])
+
   expect(() => getIntervals('dSharp_3', [{ type: 'major', distance: 3 }])).toThrow()
 })

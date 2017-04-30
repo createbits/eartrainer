@@ -45,6 +45,7 @@
   const playRandomSequence = async (twoFiveOneSequence, answers) => {
     const answer = sample(answers)
 
+    // TODO: refactor answers to contain notes and only display it without the octave
     await playSequence([
       ...twoFiveOneSequence,
       { notes: [note(answer.value, 4)], length: 1000, offset: 1000 },
@@ -54,18 +55,17 @@
   }
 
   const playResolveToTonic = async (scope) => {
+    const { scaleNotes } = scope
     const gameScale = scale(scope.baseNoteLetter, scope.scale)
     const gameDegrees = gameScale.getDegrees()
     const toneIndex = gameDegrees.indexOf(scope.roundAnswer)
-    const baseNoteDegree = gameScale.getDegree(1)
 
-    let resolvingTones = [note(baseNoteDegree, 4)]
+    let resolvingTones = [scaleNotes[0]]
 
     if (toneIndex > 0) {
-      // TODO: why does it jump an octave when using e major?
       resolvingTones = toneIndex >= 4
-        ? [...drop(gameDegrees, toneIndex).map(n => note(n, 4)), note(baseNoteDegree, 5)]
-        : take(gameDegrees, (toneIndex + 1)).map(n => note(n, 4)).reverse()
+        ? drop(scaleNotes, toneIndex)
+        : take(scaleNotes, (toneIndex + 1)).reverse()
     }
 
     return await playSequence(resolvingTones.map((note, i) => ({
@@ -98,25 +98,15 @@
     },
     data() {
       const gameScale = scale(this.baseNoteLetter, this.scale)
+      const scaleWithBase = gameScale.base(4)
 
       return {
         ...initData,
+        scaleNotes: scaleWithBase.notes([1, 2, 3, 4, 5, 6, 7, 8]),
         twoFiveOneSequence: [
-          { notes: [
-            note(gameScale.getDegree(2), 4),
-            note(gameScale.getDegree(4), 4),
-            note(gameScale.getDegree(6), 4),
-          ], length: 800 },
-          { notes: [
-            note(gameScale.getDegree(5), 4),
-            note(gameScale.getDegree(7), 4),
-            note(gameScale.getDegree(2), 5),
-          ], length: 800 },
-          { notes: [
-            note(gameScale.getDegree(1), 4),
-            note(gameScale.getDegree(3), 4),
-            note(gameScale.getDegree(5), 4),
-          ], length: 1600 },
+          { notes: scaleWithBase.notes([2, 4, 6]), length: 800 },
+          { notes: scaleWithBase.notes([5, 7, 9]), length: 800 },
+          { notes: scaleWithBase.notes([1, 3, 5]), length: 1600 },
         ],
       }
     },

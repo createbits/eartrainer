@@ -48,3 +48,26 @@ test('validly maps aeolian / minor scale', () => {
     ['bFlat', 'c', 'dFlat', 'eFlat', 'f', 'gFlat', 'aFlat'],
   )
 })
+
+test('retrieve note relatively to scale', () => {
+  const cMinorScale = scale('c', 'minor')
+
+  expect(cMinorScale.base(3).note(1)).toEqual('c_3')
+  expect(cMinorScale.base(3).notes([1, 3, 5, 8, 9])).toEqual(
+    ['c_3', 'eFlat_3', 'g_3', 'c_4', 'd_4'],
+  )
+
+  expect(scale('dSharp', 'minor').base(2).note(2)).toEqual('eSharp_2')
+
+  expect(scale('dFlat', 'major').base(4).notes([1, 8, 9])).toEqual(
+    ['dFlat_4', 'dFlat_5', 'eFlat_5'],
+  )
+
+  expect(scale('a', 'minor').base(4).notes([1, 2, 3, 4, 5, 6, 7, 8])).toEqual(
+    ['a_4', 'b_4', 'c_5', 'd_5', 'e_5', 'f_5', 'g_5', 'a_5'],
+  )
+
+  expect(scale('g', 'major').base(3).notes([1, 4, 8, 11])).toEqual(
+    ['g_3', 'c_4', 'g_4', 'c_5'],
+  )
+})
