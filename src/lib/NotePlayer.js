@@ -1,5 +1,4 @@
 import { rootNoteLetters, getNoteSpriteData } from './NoteSpriteCalculator'
-import { getIntervals } from './IntervalCalculator'
 import { transformNote } from './NoteTransformer'
 import { scale as mapScale } from './ScaleMapper'
 import { Howl } from 'howler'
