@@ -27,7 +27,7 @@ export const init = async (src) => new Promise(res => audioSource = new Howl({
 }))
 
 export const note = transformNote
-export const scale = (baseNote, scale) => mapScale(baseNote, scale)
+export const scale = (baseNote, mode) => mapScale(baseNote, mode)
 
 export const play = (notes, fadeMs = -1, waitMs = 0) => {
   if (!Array.isArray(notes)) {

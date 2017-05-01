@@ -9,7 +9,12 @@
       </div>
 
       <div class="mt3">
-        <button-component @click="isPlaying = true">Start playing</button-component>
+        <div class="">
+          <button-component @click="isPlaying = true">Start playing</button-component>
+        </div>
+        <div class="mt2">
+          <button-component @click="openExplanationModal()">How?</button-component>
+        </div>
       </div>
     </div>
 
@@ -31,16 +36,16 @@
       <h2 class="h2">Intermediate</h2>
 
       <div class="mb2">
-        <button-component @click="playAllNotes('c', 'major')">All Notes - C Major</button-component>
+        <button-component @click="playAllNotesWithConstantScale('c', 'major')">All Notes - C Major</button-component>
       </div>
       <div class="mb2">
-        <button-component @click="playAllNotes('g', 'minor')">All Notes - G Minor</button-component>
+        <button-component @click="playAllNotesWithConstantScale('c', 'minor')">All Notes - C Minor</button-component>
       </div>
       <div class="mb2">
-        <button-component @click="playAllNotes('e', 'major')">All Notes - Random Major</button-component>
+        <button-component @click="playAllNotesWithConstantMode('major')">All Notes - Random Major</button-component>
       </div>
       <div class="mb2">
-        <button-component @click="playAllNotes('c', 'minor')">All Notes - Random Minor</button-component>
+        <button-component @click="playAllNotesWithConstantMode('minor')">All Notes - Random Minor</button-component>
       </div>
 
       <!-- h2 class="h2">Advanced</h2 -->
@@ -48,15 +53,14 @@
 
     <div v-if="gameMode === 'notes'">
       <notes-game
-              :answers="gameData.answers"
-              :baseNoteLetter="gameData.baseNoteLetter"
-              :scale="gameData.scale"
+              :sets="gameData.sets"
               @finish="reset"></notes-game>
     </div>
   </div>
 </template>
 <script>
-  import { scale, note } from '../lib/NotePlayer'
+  import { range, sample } from 'lodash'
+  import { scale, note, rootNoteLetters } from '../lib/NotePlayer'
   import { formatLetter } from '../lib/NoteTransformer'
   import ButtonComponent from './Button.vue'
   import NotesGame from './NotesGame.vue'
@@ -67,6 +71,11 @@
     gameData: {},
   }
 
+  const mapNoteToAnswer = note => ({
+    value: note,
+    label: formatLetter(note).replace('_', ' '),
+  })
+
   export default {
     components: {
       ButtonComponent,
@@ -76,37 +85,58 @@
       return { ...initData }
     },
     methods: {
+      openExplanationModal() {
+        alert('Explain how');
+      },
       reset() {
         Object.keys(initData).forEach(key => {
           this[key] = initData[key]
         })
       },
-      playBeginnerNotes(scale, letters) {
+      playBeginnerNotes(mode, letters) {
         this.gameMode = 'notes'
 
-        // TODO: restructure so that the the notesgame uses sets with answers and question sequence
-        // TODO: so that the random major / minor game can be played
+        const answers = letters.map(d => note(d, 4)).map(mapNoteToAnswer)
+
+        console.log(answers)
+
         this.gameData = {
-          baseNoteLetter: 'c',
-          scale,
-          answers: letters.map(d => ({
-            value: note(d, 4),
-            label: formatLetter(d),
+          sets: range(12).map(() => ({
+            baseNoteLetter: 'c',
+            mode,
+            answers,
           })),
         }
       },
-      playAllNotes(baseNoteLetter, scaleKey) {
+      playAllNotesWithConstantScale(baseNoteLetter, mode) {
+        this.gameMode = 'notes'
+
+        const answers = scale(baseNoteLetter, mode)
+          .base(4)
+          .notes([1, 2, 3, 4, 5, 6, 7, 8])
+          .map(mapNoteToAnswer)
+
+        this.gameData = {
+          sets: range(12).map(() => ({
+            baseNoteLetter,
+            mode,
+            answers,
+          })),
+        }
+      },
+      playAllNotesWithConstantMode(mode) {
         this.gameMode = 'notes'
 
         this.gameData = {
-          baseNoteLetter,
-          scale: scaleKey,
-          answers: scale(baseNoteLetter, scaleKey)
-            .base(4)
-            .notes([1, 2, 3, 4, 5, 6, 7, 8])
-            .map(d => ({
-              value: d,
-              label: formatLetter(d),
+          sets: range(12)
+            .map(() => sample(rootNoteLetters))
+            .map((baseNoteLetter) => ({
+              baseNoteLetter,
+              mode,
+              answers: scale(baseNoteLetter, mode)
+                .base(4)
+                .notes([1, 2, 3, 4, 5, 6, 7, 8])
+                .map(mapNoteToAnswer),
             })),
         }
       },

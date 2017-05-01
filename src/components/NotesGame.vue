@@ -10,7 +10,7 @@
     <div>
       <answer-buttons
               v-if="!hasAnswer"
-              :answers="answers"
+              :answers="currentSet.answers"
               :disabled="!roundAnswer"
               @answer="provideAnswer(arguments[0])"></answer-buttons>
     </div>
@@ -54,9 +54,8 @@
     return answer.value
   }
 
-  const playResolveToTonic = async (scope) => {
-    const { scaleNotes } = scope
-    const toneIndex = scaleNotes.indexOf(scope.roundAnswer)
+  const playResolveToTonic = async (roundAnswer, scaleNotes) => {
+    const toneIndex = scaleNotes.indexOf(roundAnswer)
 
     let resolvingTones = [scaleNotes[0]]
 
@@ -72,40 +71,30 @@
     })))
   }
 
-  const initData = {
-    round: 1,
-    roundEnd: 12,
-    roundAnswer: '',
-    providedAnswer: '',
-    isPlayingResolve: false,
-    correctAnswerCount: 0,
-  }
+  const generateTwoFiveSequence = scale => [
+    { notes: scale.base(4).notes([2, 4, 6]), length: 800 },
+    { notes: scale.base(4).notes([5, 7, 9]), length: 800 },
+    { notes: scale.base(4).notes([1, 3, 5]), length: 1600 },
+  ]
+
+  const generateScaleNotes = scale => scale.base(4).notes([1, 2, 3, 4, 5, 6, 7, 8])
+  const scaleFromSet = set => scale(set.baseNoteLetter, set.mode)
 
   export default {
     components: { AnswerButtons, ButtonComponent },
     props: {
-      baseNoteLetter: {
-        type: String,
-      },
-      scale: {
-        type: String,
-      },
-      answers: {
+      sets: {
         type: Array,
       },
     },
     data() {
-      const gameScale = scale(this.baseNoteLetter, this.scale)
-      const scaleWithBase = gameScale.base(4)
-
       return {
-        ...initData,
-        scaleNotes: scaleWithBase.notes([1, 2, 3, 4, 5, 6, 7, 8]),
-        twoFiveOneSequence: [
-          { notes: scaleWithBase.notes([2, 4, 6]), length: 800 },
-          { notes: scaleWithBase.notes([5, 7, 9]), length: 800 },
-          { notes: scaleWithBase.notes([1, 3, 5]), length: 1600 },
-        ],
+        round: 1,
+        roundEnd: this.sets.length,
+        roundAnswer: null,
+        providedAnswer: null,
+        isPlayingResolve: false,
+        correctAnswerCount: 0,
       }
     },
     mounted() {
@@ -128,12 +117,18 @@
         return !this.isPlayingResolve && this.round < this.roundEnd
       },
       gameKey() {
-        return `${this.baseNoteLetter.toUpperCase()} ${startCase(this.scale)}`
+        return `${this.currentSet.baseNoteLetter.toUpperCase()} ${startCase(this.currentSet.mode)}`
+      },
+      currentSet() {
+        return this.sets[this.round - 1]
+      },
+      currentSetScale() {
+        return scaleFromSet(this.currentSet)
       },
     },
     methods: {
       formatAnswer(a) {
-        return formatLetter(a)
+        return formatLetter(a).replace('_', ' ')
       },
       playNextRound() {
         this.roundAnswer = ''
@@ -145,12 +140,17 @@
         }
       },
       playSequence() {
-        const { twoFiveOneSequence, answers } = this
-        playRandomSequence(twoFiveOneSequence, answers).then(answer => this.roundAnswer = answer)
+        playRandomSequence(
+          generateTwoFiveSequence(this.currentSetScale),
+          this.currentSet.answers,
+        ).then(answer => this.roundAnswer = answer)
       },
       playResolveToTonic() {
         this.isPlayingResolve = true
-        playResolveToTonic(this).then(() => this.isPlayingResolve = false)
+        playResolveToTonic(
+          this.roundAnswer,
+          generateScaleNotes(this.currentSetScale),
+        ).then(() => this.isPlayingResolve = false)
       },
       provideAnswer(value) {
         if (!this.roundAnswer) {
