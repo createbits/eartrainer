@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import 'basscss/css/basscss.css'
+import 'ionicons/dist/css/ionicons.css'
 import './styles/ionicons.css'
 import './styles/main.scss'
 import App from './App.vue'

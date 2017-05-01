@@ -86,7 +86,7 @@
     },
     methods: {
       openExplanationModal() {
-        alert('Explain how');
+        alert('Explain how')
       },
       reset() {
         Object.keys(initData).forEach(key => {
@@ -97,8 +97,6 @@
         this.gameMode = 'notes'
 
         const answers = letters.map(d => note(d, 4)).map(mapNoteToAnswer)
-
-        console.log(answers)
 
         this.gameData = {
           sets: range(12).map(() => ({
