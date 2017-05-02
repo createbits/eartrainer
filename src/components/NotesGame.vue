@@ -45,7 +45,6 @@
   const playRandomSequence = async (twoFiveOneSequence, answers) => {
     const answer = sample(answers)
 
-    // TODO: refactor answers to contain notes and only display it without the octave
     await playSequence([
       ...twoFiveOneSequence,
       { notes: [answer.value], length: 1000, offset: 1000 },
