@@ -14,7 +14,6 @@ init('/mp3/soundSprite.mp3').then(() => {
   play(scale('c', 'major').base(3).notes(5, 7, 9))
 })
 */
-// TODO: always use notes as objects, refactor audioSource.play and remove NoteTransformer
 // TODO: release as library
 
 let audioSource

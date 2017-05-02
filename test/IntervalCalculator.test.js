@@ -44,19 +44,22 @@ test('get note intervals', () => {
   expect(getIntervals('c_4', [
     { type: 'major', distance: 3 },
     { type: 'major', distance: 9 },
-    { type: 'major', distance: 11 },
+    { type: 'perfect', distance: 11 },
+    { type: 'augmented', distance: 11 },
     { type: 'major', distance: 13 },
-  ])).toEqual(['e_4', 'd_5', 'fSharp_5', 'aSharp_5'])
+    { type: 'perfect', distance: 15 },
+  ])).toEqual(['e_4', 'd_5', 'f_5', 'fSharp_5', 'a_5', 'c_6'])
 
   expect(getIntervals('eFlat_3', [
     { type: 'minor', distance: 3 },
     { type: 'minor', distance: 3, octave: 2 },
-    { type: 'tritone', octave: -1 }
+    { type: 'tritone', octave: -1 },
   ])).toEqual(['gFlat_3', 'gFlat_5', 'a_2'])
 
   expect(getIntervals('g_3', [
-    { type: 'perfect', distance: 4 }
-  ])).toEqual(['c_4'])
+    { type: 'perfect', distance: 4 },
+    { type: 'augmented', distance: 15 },
+  ])).toEqual(['c_4', 'gSharp_5'])
 
   expect(() => getIntervals('dSharp_3', [{ type: 'major', distance: 3 }])).toThrow()
 })
