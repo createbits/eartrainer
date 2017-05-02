@@ -37,6 +37,8 @@ const getDistanceFromType = type => {
 const calculateOctave = (halfSteps, currentOctave) =>
   parseInt(currentOctave, 10) + (halfSteps === 13 ? 1 : (Math.ceil(halfSteps / 13) - 1))
 
+// TODO: refactor so that the code is simple and understandable. also write more tests
+// TODO: do not use noteMap in here
 export const getIntervals = (baseNote, intervals) => {
   const [letter, octave] = reverseTransformNote(baseNote)
 

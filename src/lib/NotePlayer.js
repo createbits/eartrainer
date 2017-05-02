@@ -10,7 +10,8 @@ import { init, scale, play, note } from 'playnote'
 
 init('/mp3/soundSprite.mp3').then(() => {
   play(note('dSharp', 3))
-  play(scale('c', 'major').base(3).note(1))
+  play(scale('d', 'minor').base(3).note(1))
+  play(scale('c', 'major').base(3).notes(5, 7, 9))
 })
 */
 // TODO: always use notes as objects, refactor audioSource.play and remove NoteTransformer
@@ -27,9 +28,12 @@ export const init = async (src) => new Promise(res => audioSource = new Howl({
 }))
 
 export const note = transformNote
+
 export const scale = (baseNote, mode) => mapScale(baseNote, mode)
 
-export const play = (notes, fadeMs = -1, waitMs = 0) => {
+export const wait = ms => new Promise(res => setTimeout(res, ms))
+
+export const play = (notes, fadeMs = -1, waitFadeMs = 0) => {
   if (!Array.isArray(notes)) {
     notes = [notes]
   }
@@ -41,18 +45,18 @@ export const play = (notes, fadeMs = -1, waitMs = 0) => {
   const ids = notes.map(n => audioSource.play(n))
 
   if (fadeMs > -1) {
-    setTimeout(() => ids.forEach(id => audioSource.fade(1, 0, fadeMs, id)), waitMs)
+    setTimeout(() => ids.forEach(id => audioSource.fade(1, 0, fadeMs, id)), waitFadeMs)
   }
 }
 
 export const playSequence = async (noteSequence) => {
   const [n, ...restNoteSequence] = noteSequence
 
-  if (n.offset) await new Promise(res => setTimeout(res, n.offset))
+  if (n.offset) await wait(n.offset)
 
   play(n.notes, n.length * 0.2, n.length * 0.8)
 
-  await new Promise(res => setTimeout(res, n.length - (n.length * 0.1)))
+  await wait(n.length - (n.length * 0.1))
 
   return restNoteSequence.length > 0 ? playSequence(restNoteSequence) : null
 }
