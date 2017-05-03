@@ -60,8 +60,8 @@
 </template>
 <script>
   import { range, sample } from 'lodash'
-  import { scale, note, rootNoteLetters } from '../lib/NotePlayer'
-  import { formatLetter } from '../lib/NoteTransformer'
+  import { scale, note, rootNoteLetters } from 'playnote'
+  import { formatLetter } from 'playnote/lib/NoteTransformer'
   import ButtonComponent from './Button.vue'
   import NotesGame from './NotesGame.vue'
 

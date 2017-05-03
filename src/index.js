@@ -4,7 +4,7 @@ import 'ionicons/dist/css/ionicons.css'
 import './styles/ionicons.css'
 import './styles/main.scss'
 import App from './App.vue'
-import { init } from './lib/NotePlayer'
+import { init } from 'playnote'
 
 const app = new Vue({
   el: '#app',

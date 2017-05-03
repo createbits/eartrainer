@@ -37,8 +37,8 @@
 </template>
 <script>
   import { sample, drop, take, startCase } from 'lodash'
-  import { playSequence, note, scale } from '../lib/NotePlayer'
-  import { formatLetter } from '../lib/NoteTransformer'
+  import { playSequence, note, scale } from 'playnote'
+  import { formatLetter } from 'playnote/lib/NoteTransformer'
   import AnswerButtons from './NoteAnswerButtons.vue'
   import ButtonComponent from './Button.vue'
 

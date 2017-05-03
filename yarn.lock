@@ -2246,6 +2246,13 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
+playnote@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/playnote/-/playnote-0.1.0.tgz#b6bf23bce050390b7f935465d31d0a4acfd58179"
+  dependencies:
+    howler "^2.0.3"
+    lodash "^4.17.4"
+
 prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
