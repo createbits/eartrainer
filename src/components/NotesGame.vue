@@ -1,10 +1,15 @@
 <template>
   <div class="mx-auto center">
     <div class="mb2">
-      Find out which note is played after the II - V - I progression.
-
-      <div class="mt2">Key: <span class="bold" v-text="gameKey"></span></div>
-      <div class="mt2">Round: <span class="bold" v-text="round"></span> / <span v-text="roundEnd"></span></div>
+      <game-description
+              :currentRound="round"
+              :roundsCount="roundEnd"
+              description="Find out which note is played after the II - V - I progression"
+      >
+        <slot>
+          <div class="mt2">Key: <span class="bold" v-text="gameKey"></span></div>
+        </slot>
+      </game-description>
     </div>
 
     <div>
@@ -16,7 +21,7 @@
     </div>
 
     <div v-if="hasAnswer">
-      You got the <span class="bold" v-text="rightOrWrong"></span> note! The note played was: <span v-text="formatAnswer(roundAnswer)" class="b"></span>
+      You got the <span class="bold" v-text="rightOrWrong"></span> note! The note played was: <span v-text="formatAnswer(roundAnswer)" class="bold"></span>
       <div class="mt1" v-if="!hasRightAnswer">You played: <span class="bold" v-text="formatAnswer(providedAnswer)"></span></div>
 
       <div class="mt2">
@@ -44,12 +49,17 @@
   } from '../lib/NoteGamePlayer'
   import { startCase } from 'lodash'
   import { formatLetter } from 'playnote/lib/NoteTransformer'
-  import AnswerButtons from './NoteAnswerButtons.vue'
+  import AnswerButtons from './AnswerButtons.vue'
   import ButtonComponent from './Button.vue'
+  import GameDescription from './GameDescription.vue'
   import { gameMixin } from './GameMixin.js'
 
   export default {
-    components: { AnswerButtons, ButtonComponent },
+    components: {
+      AnswerButtons,
+      ButtonComponent,
+      GameDescription,
+    },
     mixins: [gameMixin],
     props: {
       sets: {
@@ -64,9 +74,6 @@
     computed: {
       gameKey() {
         return `${this.currentSet.baseNoteLetter.toUpperCase()} ${startCase(this.currentSet.mode)}`
-      },
-      currentSet() {
-        return this.sets[this.round - 1]
       },
       currentSetScale() {
         return scaleFromSet(this.currentSet)
@@ -90,13 +97,8 @@
         ).then(() => this.isPlayingResolve = false)
       },
       provideAnswer(value) {
-        if (!this.roundAnswer) {
-          return
-        }
-
         this.playResolveToTonic()
         this.defineUserAnswer(value)
-        if (this.hasRightAnswer) this.incrementCorrectAnswers()
       },
     },
   }

@@ -1,8 +1,10 @@
+import { isEqual } from 'lodash'
+
 export const gameMixin = {
   data() {
     return {
       round: 1,
-      roundEnd: this.sets.length,
+      roundEnd: this.sets ? this.sets.length : this.setsLength,
       roundAnswer: null,
       providedAnswer: null,
       correctAnswerCount: 0,
@@ -19,13 +21,18 @@ export const gameMixin = {
       return this.hasRightAnswer ? 'right' : 'wrong'
     },
     hasRightAnswer() {
-      return this.providedAnswer === this.roundAnswer
+      return this.compareAnswers
+        ? this.compareAnswers(this.providedAnswer, this.roundAnswer)
+        : isEqual(this.providedAnswer, this.roundAnswer)
     },
     isFinished() {
       return this.round === this.roundEnd
     },
     canPlayNextRound() {
       return this.round < this.roundEnd
+    },
+    currentSet() {
+      return this.sets[this.round - 1]
     },
   },
   methods: {
@@ -42,7 +49,12 @@ export const gameMixin = {
       this.roundAnswer = answer
     },
     defineUserAnswer(answer) {
+      if (!this.roundAnswer) {
+        return
+      }
+
       this.providedAnswer = answer
+      if (this.hasRightAnswer) this.incrementCorrectAnswers()
     },
     incrementCorrectAnswers() {
       this.correctAnswerCount += 1

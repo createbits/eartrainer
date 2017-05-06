@@ -35,14 +35,17 @@
           </div>
 
           <!-- h2 class="h2">Advanced</h2 -->
+          <!-- TODO: all notes with root flat and sharp notes -->
+          <!-- TODO: all notes with offkey notes -->
         </div>
         <div class="col col-6">
           <h2 class="h2">Chords</h2>
 
-          <h3 class="h3">Beginner</h3>
-
           <div class="mb2">
             <button-component @click="playBasicChords('c')">Basic Chords - C</button-component>
+          </div>
+          <div class="mb2">
+            <button-component @click="playBasicChords('e')">Basic Chords - E</button-component>
           </div>
         </div>
       </div>
@@ -55,7 +58,7 @@
     </div>
     <div v-if="gameMode === 'chords'">
       <chords-game
-        :data="gamedata"
+        :data="gameData"
         @finish="reset"
       ></chords-game>
     </div>
@@ -74,7 +77,7 @@
   const initData = {
     gameMode: null,
     gameData: {},
-    setsLength: 3,
+    setsLength: 12,
   }
 
   export default {
@@ -119,6 +122,7 @@
         this.gameMode = 'chords'
         this.gameData = {
           baseNoteLetter,
+          type: 'basic',
         }
       }
     },
