@@ -4,7 +4,7 @@
       <game-description
               :currentRound="round"
               :roundsCount="roundEnd"
-              description="Find out which chord is played"
+              description="Find out which chord is being played."
       >
         <slot>
           <div class="mt2">Base Note: <span class="bold" v-text="baseNoteLabel"></span></div>
@@ -31,7 +31,7 @@
       </div>
 
       <div class="mt2">
-        <button-component @click="provideAnswer">Provide Answer</button-component>
+        <button-component @click="provideAnswer" color="blue">Provide Answer</button-component>
       </div>
     </div>
 

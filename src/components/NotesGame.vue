@@ -4,7 +4,7 @@
       <game-description
               :currentRound="round"
               :roundsCount="roundEnd"
-              description="Find out which note is played after the II - V - I progression"
+              description="Find out which note is played after the II - V - I progression."
       >
         <slot>
           <div class="mt2">Key: <span class="bold" v-text="gameKey"></span></div>

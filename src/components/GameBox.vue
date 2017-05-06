@@ -3,7 +3,7 @@
     <div v-if="!gameMode" class="center">
       <div class="clearfix">
         <div class="col col-6">
-          <h2 class="h2">Notes</h2>
+          <h2 class="h1 mb3">Notes</h2>
 
           <h3 class="h3">Beginner</h3>
           <div class="mb2">
@@ -39,7 +39,7 @@
           <!-- TODO: all notes with offkey notes -->
         </div>
         <div class="col col-6">
-          <h2 class="h2">Chords</h2>
+          <h2 class="h1 mb3">Chords</h2>
 
           <div class="mb2">
             <button-component @click="playBasicChords('c')">Basic Chords - C</button-component>

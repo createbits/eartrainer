@@ -1,10 +1,19 @@
-@import url('https://fonts.googleapis.com/css?family=Merriweather:900|Roboto:400');
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,900');
+
+$blue: #0074D9;
+$gray: #DDDDDD;
 
 .font-roboto { font-family: 'Roboto', sans-serif; }
-.font-merriweather { font-family: 'Merriweather', serif; }
+.weight-900 { font-weight: 900; }
+.h1-huge { font-size: 5rem; }
 
 .pointer { cursor: pointer; }
 .cursor-not-allowed { cursor: not-allowed; }
 
+.blue-bg { background-color: $blue; }
+.white { color: #EFEFEF; }
 .border-black { border-color: black; }
-.gray-bg { background-color: gray; }
+.gray-bg { background-color: $gray; }
+
+.h-opacity-07:hover { opacity: 0.7; }
+.opacity-transition { transition: opacity 0.25s; }
