@@ -27,9 +27,11 @@
       <div class="mt2">
         <button-component @click="playNextRound" v-if="!isPlayingResolve && canPlayNextRound">Next round</button-component>
         <div v-if="isFinished">
-          <h2 class="my3">Congrats! You finished the game</h2>
-          <div class="mb2">You got <span v-text="correctAnswerCount"></span> of <span v-text="roundEnd"></span> points</div>
-          <button-component @click="$emit('finish')" >Go back</button-component>
+          <finished-game-screen
+                  :answersLength="roundEnd"
+                  :correctAnswers="correctAnswerCount"
+                  @finish="$emit('finish')"
+          ></finished-game-screen>
         </div>
       </div>
 
@@ -52,6 +54,7 @@
   import AnswerButtons from './AnswerButtons.vue'
   import ButtonComponent from './Button.vue'
   import GameDescription from './GameDescription.vue'
+  import FinishedGameScreen from './FinishedGameScreen.vue'
   import { gameMixin } from './GameMixin.js'
 
   export default {
@@ -59,6 +62,7 @@
       AnswerButtons,
       ButtonComponent,
       GameDescription,
+      FinishedGameScreen,
     },
     mixins: [gameMixin],
     props: {

@@ -42,9 +42,11 @@
       <div class="mt2">
         <button-component @click="playNextRound" v-if="canPlayNextRound">Next round</button-component>
         <div v-if="isFinished">
-          <h2 class="my3">Congrats! You finished the game</h2>
-          <div class="mb2">You got <span v-text="correctAnswerCount"></span> of <span v-text="roundEnd"></span> points</div>
-          <button-component @click="$emit('finish')" >Go back</button-component>
+          <finished-game-screen
+            :answersLength="roundEnd"
+            :correctAnswers="correctAnswerCount"
+            @finish="$emit('finish')"
+          ></finished-game-screen>
         </div>
       </div>
 
@@ -64,6 +66,7 @@
   } from '../lib/ChordsGameData.js'
   import { playChord } from '../lib/ChordsGamePlayer.js'
   import AnswerButtons from './AnswerButtons.vue'
+  import FinishedGameScreen from './FinishedGameScreen.vue'
   import GameDescription from './GameDescription.vue'
   import ButtonComponent from './Button.vue'
 
@@ -72,6 +75,7 @@
       AnswerButtons,
       ButtonComponent,
       GameDescription,
+      FinishedGameScreen,
     },
     mixins: [gameMixin],
     props: {
