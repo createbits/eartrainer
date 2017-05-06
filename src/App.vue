@@ -1,9 +1,12 @@
 <template>
   <div>
     <div v-if="isLoaded">
-      <h1 class="center font-merriweather" style="font-size: 3rem">Createbits Ear Trainer</h1>
-      <div class="mx-auto font-roboto" style="max-width: 800px">
-        <game-box></game-box>
+      <h1 @click="$router.push({ name: 'home' })"
+          class="center pointer font-merriweather"
+          style="font-size: 3rem">Createbits Ear Trainer</h1>
+
+      <div class="font-roboto">
+        <router-view></router-view>
       </div>
     </div>
     <div v-if="!isLoaded" class="font-merriweather center" style="margin-top: 200px">

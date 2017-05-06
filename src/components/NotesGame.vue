@@ -20,8 +20,7 @@
       <div class="mt1" v-if="!hasRightAnswer">You played: <span class="bold" v-text="formatAnswer(providedAnswer)"></span></div>
 
       <div class="mt2">
-
-        <button-component @click="playNextRound" v-if="canPlayNextRound">Next round</button-component>
+        <button-component @click="playNextRound" v-if="!isPlayingResolve && canPlayNextRound">Next round</button-component>
         <div v-if="isFinished">
           <h2 class="my3">Congrats! You finished the game</h2>
           <div class="mb2">You got <span v-text="correctAnswerCount"></span> of <span v-text="roundEnd"></span> points</div>
@@ -29,58 +28,29 @@
         </div>
       </div>
 
-      <div class="mt3" v-if="canPlayNextRound">
+      <div class="mt3" v-if="!isPlayingResolve && canPlayNextRound">
         <button-component @click="$emit('finish')" >Go back</button-component>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import { sample, drop, take, startCase } from 'lodash'
-  import { playSequence, note, scale } from 'playnote'
+  import {
+    playRandomSequence,
+    playResolveToTonic,
+    generateTwoFiveSequence,
+    generateScaleNotes,
+    scaleFromSet,
+  } from '../lib/NoteGamePlayer'
+  import { startCase } from 'lodash'
   import { formatLetter } from 'playnote/lib/NoteTransformer'
   import AnswerButtons from './NoteAnswerButtons.vue'
   import ButtonComponent from './Button.vue'
-
-  const playRandomSequence = async (twoFiveOneSequence, answers) => {
-    const answer = sample(answers)
-
-    await playSequence([
-      ...twoFiveOneSequence,
-      { notes: [answer.value], length: 1000, offset: 1000 },
-    ])
-
-    return answer.value
-  }
-
-  const playResolveToTonic = async (roundAnswer, scaleNotes) => {
-    const toneIndex = scaleNotes.indexOf(roundAnswer)
-
-    let resolvingTones = [scaleNotes[0]]
-
-    if (toneIndex > 0) {
-      resolvingTones = toneIndex >= 4
-        ? drop(scaleNotes, toneIndex)
-        : take(scaleNotes, (toneIndex + 1)).reverse()
-    }
-
-    return await playSequence(resolvingTones.map((note, i) => ({
-      notes: [note],
-      length: (i === 0 || (resolvingTones.length - 1) === i) ? 800 : 400,
-    })))
-  }
-
-  const generateTwoFiveSequence = scale => [
-    { notes: scale.base(4).notes([2, 4, 6]), length: 800 },
-    { notes: scale.base(4).notes([5, 7, 9]), length: 800 },
-    { notes: scale.base(4).notes([1, 3, 5]), length: 1600 },
-  ]
-
-  const generateScaleNotes = scale => scale.base(4).notes([1, 2, 3, 4, 5, 6, 7, 8])
-  const scaleFromSet = set => scale(set.baseNoteLetter, set.mode)
+  import { gameMixin } from './GameMixin.js'
 
   export default {
     components: { AnswerButtons, ButtonComponent },
+    mixins: [gameMixin],
     props: {
       sets: {
         type: Array,
@@ -88,33 +58,10 @@
     },
     data() {
       return {
-        round: 1,
-        roundEnd: this.sets.length,
-        roundAnswer: null,
-        providedAnswer: null,
         isPlayingResolve: false,
-        correctAnswerCount: 0,
       }
     },
-    mounted() {
-      this.playSequence()
-    },
     computed: {
-      hasAnswer() {
-        return !!this.providedAnswer
-      },
-      rightOrWrong() {
-        return this.hasRightAnswer ? 'right' : 'wrong'
-      },
-      hasRightAnswer() {
-        return this.providedAnswer === this.roundAnswer
-      },
-      isFinished() {
-        return this.round === this.roundEnd
-      },
-      canPlayNextRound() {
-        return !this.isPlayingResolve && this.round < this.roundEnd
-      },
       gameKey() {
         return `${this.currentSet.baseNoteLetter.toUpperCase()} ${startCase(this.currentSet.mode)}`
       },
@@ -129,20 +76,11 @@
       formatAnswer(a) {
         return formatLetter(a).replace('_', ' ')
       },
-      playNextRound() {
-        this.roundAnswer = ''
-        this.providedAnswer = ''
-
-        if (this.round < this.roundEnd) {
-          this.round += 1
-          this.playSequence()
-        }
-      },
-      playSequence() {
+      playQuestion() {
         playRandomSequence(
           generateTwoFiveSequence(this.currentSetScale),
           this.currentSet.answers,
-        ).then(answer => this.roundAnswer = answer)
+        ).then(answer => this.defineRoundAnswer(answer))
       },
       playResolveToTonic() {
         this.isPlayingResolve = true
@@ -157,8 +95,8 @@
         }
 
         this.playResolveToTonic()
-        this.providedAnswer = value
-        if (this.providedAnswer === this.roundAnswer) this.correctAnswerCount += 1
+        this.defineUserAnswer(value)
+        if (this.hasRightAnswer) this.incrementCorrectAnswers()
       },
     },
   }
