@@ -2246,9 +2246,9 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
-playnote@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/playnote/-/playnote-0.1.1.tgz#e92d9843518365340b7de2c9942a98a07b536ea6"
+playnote@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/playnote/-/playnote-0.1.2.tgz#5064a72e614f9fc2616dda939fefc7b750ad1473"
   dependencies:
     howler "^2.0.3"
     lodash "^4.17.4"

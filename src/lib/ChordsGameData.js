@@ -28,9 +28,15 @@ const basicTriads = {
   augmentedTriad,
 }
 
+let lastKey
+
 const chordsMap = {
   basic() {
-    const triadKey = sample(Object.keys(basicTriads))
+    const triadKey = sample(Object
+      .keys(basicTriads)
+      .filter(key => key !== lastKey)
+    )
+    lastKey = triadKey
 
     return {
       label: startCase(triadKey),
