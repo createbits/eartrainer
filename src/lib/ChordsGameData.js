@@ -1,4 +1,4 @@
-import { sample, range, startCase } from 'lodash'
+import { sample, sampleSize, range, startCase } from 'lodash'
 import { intervals } from 'playnote'
 
 const minorTriad = [
@@ -28,14 +28,45 @@ const basicTriads = {
   augmentedTriad,
 }
 
+const getPositionLabel = distance => {
+  if (!distance) return ''
+  if (distance === 2) return `${distance}nd`
+  if (distance === 3) return `${distance}rd`
+
+  return `${distance}th`
+}
+
+const getIntervalLabel = interval =>
+  `${startCase(interval.type)} ${getPositionLabel(interval.distance)}`
+
+const getIntervalAnswer = interval => ({
+  label: getIntervalLabel(interval),
+  value: interval,
+})
+
+const chordIntervals = [
+  { type: 'minor', distance: 2 },
+  { type: 'major', distance: 2 },
+  { type: 'minor', distance: 3 },
+  { type: 'major', distance: 3 },
+  { type: 'perfect', distance: 4 },
+  { type: 'tritone' },
+  { type: 'perfect', distance: 5 },
+  { type: 'minor', distance: 6 },
+  { type: 'major', distance: 6 },
+  { type: 'minor', distance: 7 },
+  { type: 'major', distance: 7 },
+  { type: 'octave', octave: 1 },
+]
+
+export const intervalAnswers = chordIntervals.map(i => getIntervalAnswer (i))
+
 let lastKey
 
 const chordsMap = {
-  basic() {
-    const triadKey = sample(Object
-      .keys(basicTriads)
-      .filter(key => key !== lastKey)
-    )
+  simpleTriad() {
+    const triadKey = sample(Object.keys(basicTriads)
+      .filter(key => key !== lastKey))
     lastKey = triadKey
 
     return {
@@ -45,41 +76,22 @@ const chordsMap = {
         ...basicTriads[triadKey],
       ],
     }
-  }
+  },
+  advancedTriad() {
+    const triadIntervals = sampleSize(chordIntervals, 2)
+
+    return {
+      label: `Tonic, ${triadIntervals.map(i => getIntervalLabel(i)).join(', ')}`,
+      intervals: [
+        { type: 'octave' },
+        ...triadIntervals,
+      ],
+    }
+  },
 }
-
-const getPositionLabel = distance => {
-  if (!distance) return ''
-  if (distance === 2) return `${distance}nd`
-  if (distance === 3) return `${distance}rd`
-
-  return `${distance}th`
-}
-
-const getIntervalAnswer = interval => ({
-  label: `${startCase(interval.type)} ${getPositionLabel(interval.distance)}`,
-  value: interval,
-})
 
 export const generateChordsSets = ({ length, baseNoteLetter, type }) => range(length)
   .map(() => ({
     baseNoteLetter,
     ...chordsMap[type](),
   }))
-
-export const getIntervalAnswers = () => {
-  return [
-    getIntervalAnswer({ type: 'minor', distance: 2 }),
-    getIntervalAnswer({ type: 'major', distance: 2 }),
-    getIntervalAnswer({ type: 'minor', distance: 3 }),
-    getIntervalAnswer({ type: 'major', distance: 3 }),
-    getIntervalAnswer({ type: 'perfect', distance: 4 }),
-    getIntervalAnswer({ type: 'tritone' }),
-    getIntervalAnswer({ type: 'perfect', distance: 5 }),
-    getIntervalAnswer({ type: 'minor', distance: 6 }),
-    getIntervalAnswer({ type: 'major', distance: 6 }),
-    getIntervalAnswer({ type: 'minor', distance: 7 }),
-    getIntervalAnswer({ type: 'major', distance: 7 }),
-    getIntervalAnswer({ type: 'octave', octave: 1 }),
-  ]
-}

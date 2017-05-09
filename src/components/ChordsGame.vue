@@ -61,8 +61,8 @@
   import { rootNoteLetters } from 'playnote'
   import { gameMixin } from './GameMixin'
   import {
+    intervalAnswers,
     generateChordsSets,
-    getIntervalAnswers
   } from '../lib/ChordsGameData.js'
   import { playChord } from '../lib/ChordsGamePlayer.js'
   import AnswerButtons from './AnswerButtons.vue'
@@ -117,7 +117,7 @@
         }))
       },
       intervalAnswers() {
-        return getIntervalAnswers()
+        return intervalAnswers
       },
       batchedIntervalAnswers() {
         return chunk(this.intervalAnswers, 4)

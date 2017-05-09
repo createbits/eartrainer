@@ -41,11 +41,22 @@
         <div class="col col-6">
           <h2 class="h1 mb3">Chords</h2>
 
+          <h3 class="h3">Beginner</h3>
+
           <div class="mb2">
-            <button-component @click="playBasicChords('c')">Basic Chords - C</button-component>
+            <button-component @click="playSimpleTriads('c')">Simple Triads - C</button-component>
           </div>
           <div class="mb2">
-            <button-component @click="playBasicChords('e')">Basic Chords - E</button-component>
+            <button-component @click="playSimpleTriads('e')">Simple Triads - E</button-component>
+          </div>
+          <div class="mb2">
+
+            <h3 class="h3">Intermediate</h3>
+
+            <button-component @click="playAdvancedTriads('c')">Advanced Triads - C</button-component>
+          </div>
+          <div class="mb2">
+            <button-component @click="playAdvancedTriads('e')">Advanced Triads - E</button-component>
           </div>
         </div>
       </div>
@@ -118,13 +129,20 @@
           length: this.setsLength,
         })
       },
-      playBasicChords(baseNoteLetter) {
+      playSimpleTriads(baseNoteLetter) {
         this.gameMode = 'chords'
         this.gameData = {
           baseNoteLetter,
-          type: 'basic',
+          type: 'simpleTriad',
         }
-      }
+      },
+      playAdvancedTriads(baseNoteLetter) {
+        this.gameMode = 'chords'
+        this.gameData = {
+          baseNoteLetter,
+          type: 'advancedTriad',
+        }
+      },
     },
   }
 </script>
