@@ -20,12 +20,15 @@
               @answer="provideAnswer(arguments[0])"></answer-buttons>
     </div>
 
+    <div v-if="!!roundAnswer && !hasAnswer" class="my2">
+      <button-component @click="replayQuestion">Replay</button-component>
+    </div>
     <div v-if="hasAnswer">
       You got the <span class="bold" v-text="rightOrWrong"></span> note! The note played was: <span v-text="formatAnswer(roundAnswer)" class="bold"></span>
       <div class="mt1" v-if="!hasRightAnswer">You played: <span class="bold" v-text="formatAnswer(providedAnswer)"></span></div>
 
       <div class="mt2">
-        <button-component @click="playNextRound" v-if="!isPlayingResolve && canPlayNextRound">Next round</button-component>
+        <button-component @click="playNextRound" v-if="!isPlayingResolve && canPlayNextRound" color="blue">Next round</button-component>
         <div v-if="isFinished">
           <finished-game-screen
                   :answersLength="roundEnd"
@@ -43,10 +46,10 @@
 </template>
 <script>
   import {
-    playRandomSequence,
+    playRandomNoteSequence,
+    playNoteSequence,
     playResolveToTonic,
     generateTwoFiveSequence,
-    generateScaleNotes,
     scaleFromSet,
   } from '../lib/NoteGamePlayer'
   import { startCase } from 'lodash'
@@ -85,19 +88,26 @@
     },
     methods: {
       formatAnswer(a) {
-        return formatLetter(a).replace('_', ' ')
+        return a.map(note => formatLetter(note).replace('_', ' ')).join(', ')
       },
       playQuestion() {
-        playRandomSequence(
+        playRandomNoteSequence(
           generateTwoFiveSequence(this.currentSetScale),
           this.currentSet.answers,
         ).then(answer => this.defineRoundAnswer(answer))
+      },
+      replayQuestion() {
+        playNoteSequence(
+          this.roundAnswer,
+          generateTwoFiveSequence(this.currentSetScale),
+        )
       },
       playResolveToTonic() {
         this.isPlayingResolve = true
         playResolveToTonic(
           this.roundAnswer,
-          generateScaleNotes(this.currentSetScale),
+          this.currentSetScale,
+          (this.currentSet.intervals || [1]),
         ).then(() => this.isPlayingResolve = false)
       },
       provideAnswer(value) {

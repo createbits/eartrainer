@@ -44,15 +44,29 @@
           <h3 class="h3">Beginner</h3>
 
           <div class="mb2">
-            <button-component @click="playSimpleTriads('c')">Simple Triads - C</button-component>
+            <button-component @click="playSimpleTriads('d')">Simple Triads - D</button-component>
           </div>
           <div class="mb2">
             <button-component @click="playSimpleTriads('e')">Simple Triads - E</button-component>
           </div>
           <div class="mb2">
+            <button-component @click="playScaleTriads('c', 'major')">Scale Triads - C Major</button-component>
+          </div>
+          <div class="mb2">
+            <button-component @click="playScaleTriads('g', 'minor')">Scale Triads - G Minor</button-component>
+          </div>
 
-            <h3 class="h3">Intermediate</h3>
+          <h3 class="h3">Intermediate</h3>
+          <div class="mb2">
+            <button-component @click="window.alert('yes')">Seventh Chords - C</button-component>
+          </div>
+          <div class="mb2">
+            <button-component @click="window.alert('yes')">Scale Seventh Chords - A Major</button-component>
+          </div>
 
+          <h3 class="h3">Advanced</h3>
+
+          <div class="mb2">
             <button-component @click="playAdvancedTriads('c')">Advanced Triads - C</button-component>
           </div>
           <div class="mb2">
@@ -141,6 +155,17 @@
         this.gameData = {
           baseNoteLetter,
           type: 'advancedTriad',
+        }
+      },
+      playScaleTriads(baseNoteLetter, mode) {
+        this.gameMode = 'notes'
+        this.gameData = {
+          ...generateInKeyWithConstantNoteGameSets({
+            length: this.setsLength,
+            baseNoteLetter,
+            mode,
+            intervals: [1, 3, 5],
+          }),
         }
       },
     },

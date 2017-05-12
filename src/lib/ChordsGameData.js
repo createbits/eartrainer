@@ -1,5 +1,10 @@
 import { sample, sampleSize, range, startCase } from 'lodash'
-import { intervals } from 'playnote'
+import { intervals, scale } from 'playnote'
+import { playChord } from './ChordsGamePlayer.js'
+import {
+  generateTwoFiveSequence,
+  generateScaleNotes,
+} from './NoteGamePlayer'
 
 const minorTriad = [
   { type: 'minor', distance: 3 },
@@ -75,6 +80,7 @@ const chordsMap = {
         { type: 'octave' },
         ...basicTriads[triadKey],
       ],
+      play: (d) => playChord(d),
     }
   },
   advancedTriad() {
@@ -86,12 +92,13 @@ const chordsMap = {
         { type: 'octave' },
         ...triadIntervals,
       ],
+      play: (d) => playChord(d),
     }
   },
 }
 
-export const generateChordsSets = ({ length, baseNoteLetter, type }) => range(length)
+export const generateChordsSets = ({ length, baseNoteLetter, mode, type }) => range(length)
   .map(() => ({
     baseNoteLetter,
-    ...chordsMap[type](),
+    ...chordsMap[type](baseNoteLetter, mode),
   }))

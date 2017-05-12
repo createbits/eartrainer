@@ -35,6 +35,9 @@
       </div>
     </div>
 
+    <div v-if="!!roundAnswer && !hasAnswer" class="my2">
+      <button-component @click="playCurrentSet">Replay</button-component>
+    </div>
     <div v-if="hasAnswer">
       You have chosen the <span class="bold" v-text="rightOrWrong"></span> interval!
       The played chord was: <span v-text="roundAnswer.label" class="bold"></span>
@@ -88,12 +91,13 @@
       },
     },
     data() {
-      const { baseNoteLetter, type } = this.data
+      const { baseNoteLetter, type, mode } = this.data
 
       return {
         currentIntervalAnswers: [],
         sets: generateChordsSets({
           type,
+          mode,
           baseNoteLetter,
           length: this.setsLength,
         }),
@@ -129,8 +133,11 @@
       },
       playQuestion() {
         this.resetAnswers()
-        playChord(this.currentSet)
+        this.playCurrentSet()
         this.defineRoundAnswer(this.currentSet)
+      },
+      playCurrentSet() {
+        this.currentSet.play(this.currentSet)
       },
       removeIntervalAnswer(selected) {
         this.currentIntervalAnswers = this.currentIntervalAnswers.filter(answer =>
