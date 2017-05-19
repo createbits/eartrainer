@@ -1,6 +1,6 @@
 import { range, sample } from 'lodash'
 import { note, scale, rootNoteLetters } from 'playnote'
-import { formatLetter } from 'playnote/src/NoteTransformer'
+import { formatLetter } from 'playnote/lib/NoteTransformer'
 
 const mapSingleNoteToAnswer = note => ({
   value: [note],

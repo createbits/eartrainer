@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "vbuild dev src/index.js",
+    "dev": "poi dev src/index.js",
+    "build": "poi build src/index.js",
+    "deploy-test": "yarn build && cd dist && surge . --domain test-createbits-trainer.surge.sh",
     "test": "jest --watch"
   },
   "license": "MIT",

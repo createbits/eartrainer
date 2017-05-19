@@ -10,7 +10,7 @@
 
       <modal name="explanation" :resizable="true">
         <div class="p3">
-          Explanation about ear trainer.
+          Explanation about the ear trainer method by Alain Benbassat.
 
           <div class="mt1">* link to createbits video</div>
           <div class="mt1">* simple text based explanation beneath.</div>
