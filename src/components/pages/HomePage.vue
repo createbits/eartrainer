@@ -8,12 +8,16 @@
         Have fun playing!
       </div>
 
-      <modal name="explanation" :resizable="true">
+      <modal name="explanation" :height="600" :width="600" :resizable="true">
         <div class="p3">
-          Explanation about the ear trainer method by Alain Benbassat.
-
-          <div class="mt1">* link to createbits video</div>
-          <div class="mt1">* simple text based explanation beneath.</div>
+          <iframe src="https://vid.me/e/jQgQ?stats=1"
+                  width="535"
+                  height="300"
+                  frameborder="0"
+                  allowfullscreen
+                  webkitallowfullscreen
+                  mozallowfullscreen
+                  scrolling="no"></iframe>
         </div>
       </modal>
 
