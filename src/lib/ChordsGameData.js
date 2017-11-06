@@ -1,10 +1,6 @@
 import { sample, sampleSize, range, startCase } from 'lodash'
-import { intervals, scale } from 'playnote'
+import { intervals } from 'playnote'
 import { playChord } from './ChordsGamePlayer.js'
-import {
-  generateTwoFiveSequence,
-  generateScaleNotes,
-} from './NoteGamePlayer'
 
 const minorTriad = [
   { type: 'minor', distance: 3 },
@@ -31,6 +27,29 @@ const basicTriads = {
   majorTriad,
   diminishedTriad,
   augmentedTriad,
+}
+
+const seventhChords = {
+  minorSeventh: [
+    ...minorTriad,
+    { type: 'minor', distance: 7 },
+  ],
+  majorSeventh: [
+    ...majorTriad,
+    { type: 'major', distance: 7 },
+  ],
+  dominantSeventh: [
+    ...majorTriad,
+    { type: 'minor', distance: 7 },
+  ],
+  diminishedSeventh: [
+    ...diminishedTriad,
+    { type: 'major', distance: 6 },
+  ],
+  halfDiminishedSeventh: [
+    ...diminishedTriad,
+    { type: 'minor', distance: 7 },
+  ],
 }
 
 const getPositionLabel = distance => {
@@ -68,20 +87,27 @@ export const intervalAnswers = chordIntervals.map(i => getIntervalAnswer (i))
 
 let lastKey
 
+const chordDefinitionForMap = map => {
+  const key = sample(Object.keys(map)
+    .filter(key => key !== lastKey))
+  lastKey = key
+
+  return {
+    label: startCase(key),
+    intervals: [
+      { type: 'octave' },
+      ...map[key],
+    ],
+    play: playChord,
+  }
+}
+
 const chordsMap = {
   simpleTriad() {
-    const triadKey = sample(Object.keys(basicTriads)
-      .filter(key => key !== lastKey))
-    lastKey = triadKey
-
-    return {
-      label: startCase(triadKey),
-      intervals: [
-        { type: 'octave' },
-        ...basicTriads[triadKey],
-      ],
-      play: (d) => playChord(d),
-    }
+    return chordDefinitionForMap(basicTriads)
+  },
+  seventhChord() {
+    return chordDefinitionForMap(seventhChords)
   },
   advancedTriad() {
     const triadIntervals = sampleSize(chordIntervals, 2)
@@ -92,7 +118,7 @@ const chordsMap = {
         { type: 'octave' },
         ...triadIntervals,
       ],
-      play: (d) => playChord(d),
+      play: playChord,
     }
   },
 }

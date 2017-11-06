@@ -58,10 +58,10 @@
 
           <h3 class="h3">Intermediate</h3>
           <div class="mb2">
-            <button-component @click="window.alert('yes')">Seventh Chords - C</button-component>
+            <button-component @click="playSeventhChords('c')">Seventh Chords - C</button-component>
           </div>
           <div class="mb2">
-            <button-component @click="window.alert('yes')">Scale Seventh Chords - A Major</button-component>
+            <button-component @click="playScaleSeventhChord('a')">Scale Seventh Chords - A Major</button-component>
           </div>
 
           <h3 class="h3">Advanced</h3>
@@ -166,6 +166,24 @@
             mode,
             intervals: [1, 3, 5],
           }),
+        }
+      },
+      playScaleSeventhChord(baseNoteLetter, mode) {
+        this.gameMode = 'notes'
+        this.gameData = {
+          ...generateInKeyWithConstantNoteGameSets({
+            length: this.setsLength,
+            baseNoteLetter,
+            mode,
+            intervals: [1, 3, 5, 7],
+          }),
+        }
+      },
+      playSeventhChords(baseNoteLetter) {
+        this.gameMode = 'chords'
+        this.gameData = {
+          baseNoteLetter,
+          type: 'seventhChord',
         }
       },
     },
